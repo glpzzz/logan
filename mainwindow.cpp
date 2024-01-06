@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->ui->tvOutput->setModel(&(this->model));
 
     QMetaObject::connectSlotsByName(this);
+
+    this->selectFile();
 }
 
 MainWindow::~MainWindow()
