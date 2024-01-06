@@ -15,15 +15,35 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // START initialize with default parsers
+
+    Parser* pNoParser = new Parser("Don't parse", "^(.*)$", QStringList("Message"));
+    this->parsers.append(pNoParser);
+
+
+    QStringList yii2Headers;
+    yii2Headers << "Date Time" << "IP" << "User ID" << "Request ID" << "Level" << "Category" << "Message";
+    Parser* pYiiParser = new Parser(
+        "Yii 2 Log",
+        "^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) \\[(.*?)\\]\\[(.*?)\\]\\[(.*?)\\]\\[(info|error|warn)\\]\\[(.*?)\\](.*)$",
+        yii2Headers);
+    this->parsers.append(pYiiParser);
+
+    // END initialize with default parsers
+
+    QStringList parsersNames;
+    std::transform(this->parsers.begin(), this->parsers.end(), std::back_inserter(parsersNames),
+                   [](Parser* parser) { return parser->getName(); });
+
+    this->modelParsers.setStringList(parsersNames);
+    this->ui->cbAvailableParsers->setModel(&(this->modelParsers));
+
     // Connect the dataChanged signal to a slot
-    QObject::connect(&(this->headers), &QAbstractItemModel::dataChanged, [&]() {
-        this->model.setHorizontalHeaderLabels(this->headers.stringList());
+    QObject::connect(&(this->modelHeaderLabels), &QAbstractItemModel::dataChanged, [&]() {
+        this->modelEntries.setHorizontalHeaderLabels(this->modelHeaderLabels.stringList());
     });
 
-    this->ui->lvColumnsNames->setModel(&(this->headers));
-    this->ui->tvOutput->setModel(&(this->model));
-
-    QMetaObject::connectSlotsByName(this);
+    this->ui->tvOutput->setModel(&(this->modelEntries));
 
     this->selectFile();
 }
@@ -40,11 +60,26 @@ void MainWindow::selectFile()
 
 void MainWindow::processFile()
 {
-    this->model.clear();
-    this->model.setHorizontalHeaderLabels(this->headers.stringList());
+    this->modelEntries.clear();
 
-    QString regexString = this->ui->pteRegExp->toPlainText();
-    QRegularExpression regex(regexString);
+    // update the attributes based on the selected parser
+    this->regexp.setPattern(this->currentParser->getPattern());
+
+    if(!this->regexp.isValid()) {
+        QMessageBox::critical(
+            this,
+            "Invalid regular expression",
+            QString("The regular expression \n {regexp} \n is not valid")
+                .replace(
+                    "{regexp}",
+                    this->currentParser->getPattern()
+                    )
+            );
+    }
+
+    this->modelHeaderLabels.setStringList(this->currentParser->getHeaderLabels());
+
+    this->modelEntries.setHorizontalHeaderLabels(this->modelHeaderLabels.stringList());
 
     QFile file(this->selectedFile);
 
@@ -59,7 +94,7 @@ void MainWindow::processFile()
     while (!in.atEnd()) {
         QString line = in.readLine();
 
-        QRegularExpressionMatch match = regex.match(line);
+        QRegularExpressionMatch match = this->regexp.match(line);
         if (match.hasMatch()) {
             QList<QStandardItem *> rowItems;
             for (int i = 1; i <= match.lastCapturedIndex(); ++i) {
@@ -70,7 +105,7 @@ void MainWindow::processFile()
                 }
                 rowItems << item;
             }
-            this->model.appendRow(rowItems);
+            this->modelEntries.appendRow(rowItems);
         } else { //add to StringList of lines between records
             extraLines.append(line);
         }
@@ -79,17 +114,9 @@ void MainWindow::processFile()
     file.close();
 }
 
-void MainWindow::updateHeadersCount()
+void MainWindow::selectParserByIndex(int index)
 {
-    QString regexString = this->ui->pteRegExp->toPlainText();
-    QRegularExpression regex(regexString);
-
-    QStringList headerLabels;
-    for (int i = 1; i <= regex.captureCount(); ++i) {
-        headerLabels << QString("Column ") + QString::number(i);
-    }
-
-    this->headers.setStringList(headerLabels);
+    this->currentParser = this->parsers.at(index);
 }
 
 void MainWindow::on_actionAbout_Logan_triggered()

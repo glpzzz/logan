@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QStandardItemModel>
 #include <QStringListModel>
+#include <QRegularExpression>
+
+#include "parser.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,14 +23,20 @@ public:
 public slots:
     void selectFile();
     void processFile();
-    void updateHeadersCount();
+    void selectParserByIndex(int index);
     void on_actionAbout_Logan_triggered();
     void on_actionAbout_Qt_triggered();
 
 private:
     Ui::MainWindow *ui;
     QString selectedFile;
-    QStandardItemModel model;
-    QStringListModel headers;
+    QList<Parser*> parsers;
+    Parser* currentParser;
+
+    QRegularExpression regexp;
+
+    QStringListModel modelParsers;
+    QStandardItemModel modelEntries;
+    QStringListModel modelHeaderLabels;
 };
 #endif // MAINWINDOW_H

@@ -16,6 +16,8 @@ set(TS_FILES logan_es_ES.ts)
 
 set(PROJECT_SOURCES
         main.cpp
+        parser.cpp
+        parser.h
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui

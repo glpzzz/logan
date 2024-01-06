@@ -14,71 +14,44 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>0</number>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="1">
+     <widget class="QComboBox" name="cbAvailableParsers"/>
+    </item>
+    <item row="1" column="0" colspan="3">
+     <widget class="QTableView" name="tvOutput">
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
       </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Setup</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="3" column="0" colspan="2">
-         <widget class="QPushButton" name="pbProcess">
-          <property name="text">
-           <string>Process</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Regular Expression</string>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QPlainTextEdit" name="pteRegExp">
-             <property name="plainText">
-              <string>^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) \[(.*?)\]\[(.*?)\]\[(.*?)\]\[(info|error|warn)\]\[(.*?)\](.*)$</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="title">
-           <string>Columns Names</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QListView" name="lvColumnsNames"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Grid</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QTableView" name="tvOutput">
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>true</bool>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="pbApplyParser">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Apply</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Parser</string>
+      </property>
      </widget>
     </item>
    </layout>
@@ -139,22 +112,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pbProcess</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>processFile()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>313</x>
-     <y>508</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>246</x>
-     <y>536</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionOpen</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -187,18 +144,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>pteRegExp</sender>
-   <signal>textChanged()</signal>
+   <sender>cbAvailableParsers</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>updateHeadersCount()</slot>
+   <slot>selectParserByIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>178</y>
+     <x>174</x>
+     <y>38</y>
     </hint>
     <hint type="destinationlabel">
-     <x>379</x>
-     <y>28</y>
+     <x>296</x>
+     <y>23</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pbApplyParser</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>processFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>641</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>673</x>
+     <y>82</y>
     </hint>
    </hints>
   </connection>
@@ -207,5 +180,6 @@
   <slot>processFile()</slot>
   <slot>selectFile()</slot>
   <slot>updateHeadersCount()</slot>
+  <slot>selectParserByIndex(int)</slot>
  </slots>
 </ui>
