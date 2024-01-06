@@ -24,8 +24,15 @@
        <attribute name="title">
         <string>Setup</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="3" column="0" colspan="2">
+         <widget class="QPushButton" name="pbProcess">
+          <property name="text">
+           <string>Process</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
            <string>Regular Expression</string>
@@ -41,11 +48,16 @@
           </layout>
          </widget>
         </item>
-        <item>
-         <widget class="QPushButton" name="pbProcess">
-          <property name="text">
-           <string>Process</string>
+        <item row="1" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>Columns Names</string>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QListView" name="lvColumnsNames"/>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -174,9 +186,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pteRegExp</sender>
+   <signal>textChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateHeadersCount()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>273</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>379</x>
+     <y>28</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>processFile()</slot>
   <slot>selectFile()</slot>
+  <slot>updateHeadersCount()</slot>
  </slots>
 </ui>

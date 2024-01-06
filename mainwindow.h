@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStandardItemModel>
+#include <QStringListModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,6 +20,7 @@ public:
 public slots:
     void selectFile();
     void processFile();
+    void updateHeadersCount();
     void on_actionAbout_Logan_triggered();
     void on_actionAbout_Qt_triggered();
 
@@ -26,5 +28,6 @@ private:
     Ui::MainWindow *ui;
     QString selectedFile;
     QStandardItemModel model;
+    QStringListModel headers;
 };
 #endif // MAINWINDOW_H

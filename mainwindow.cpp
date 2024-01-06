@@ -14,6 +14,15 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Connect the dataChanged signal to a slot
+    QObject::connect(&(this->headers), &QAbstractItemModel::dataChanged, [&]() {
+        this->model.setHorizontalHeaderLabels(this->headers.stringList());
+    });
+
+    this->ui->lvColumnsNames->setModel(&(this->headers));
+    this->ui->tvOutput->setModel(&(this->model));
+
     QMetaObject::connectSlotsByName(this);
 }
 
@@ -30,6 +39,7 @@ void MainWindow::selectFile()
 void MainWindow::processFile()
 {
     this->model.clear();
+    this->model.setHorizontalHeaderLabels(this->headers.stringList());
 
     QString regexString = this->ui->pteRegExp->toPlainText();
     QRegularExpression regex(regexString);
@@ -41,25 +51,13 @@ void MainWindow::processFile()
         return;
     }
 
-    // Create a QTextStream to read the file
     QTextStream in(&file);
 
-    QStringList headerLabels;
-    QRegularExpressionMatch match = regex.match("");
-    for (int i = 1; i <= match.lastCapturedIndex(); ++i) {
-        headerLabels << match.captured(i);
-    }
-    this->model.setHorizontalHeaderLabels(headerLabels);
-
-    // Process each line in the file
     QStringList extraLines;
     while (!in.atEnd()) {
         QString line = in.readLine();
 
-        // Use the regular expression to check for matches
         QRegularExpressionMatch match = regex.match(line);
-
-        // Process the match
         if (match.hasMatch()) {
             QList<QStandardItem *> rowItems;
             for (int i = 1; i <= match.lastCapturedIndex(); ++i) {
@@ -77,8 +75,19 @@ void MainWindow::processFile()
     }
 
     file.close();
+}
 
-    this->ui->tvOutput->setModel(&(this->model));
+void MainWindow::updateHeadersCount()
+{
+    QString regexString = this->ui->pteRegExp->toPlainText();
+    QRegularExpression regex(regexString);
+
+    QStringList headerLabels;
+    for (int i = 1; i <= regex.captureCount(); ++i) {
+        headerLabels << QString("Column ") + QString::number(i);
+    }
+
+    this->headers.setStringList(headerLabels);
 }
 
 void MainWindow::on_actionAbout_Logan_triggered()
