@@ -100,7 +100,6 @@ void MainWindow::processFile()
     }
 
     this->modelHeaderLabels.setStringList(this->currentParser->getHeaderLabels());
-
     this->modelEntries.setHorizontalHeaderLabels(this->modelHeaderLabels.stringList());
 
     QFile file(this->selectedFile);
@@ -134,6 +133,8 @@ void MainWindow::processFile()
     }
 
     file.close();
+
+    this->ui->tvOutput->resizeColumnsToContents();
 }
 
 void MainWindow::selectParserByIndex(int index)
