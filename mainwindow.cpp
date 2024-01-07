@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // END initialize with default parsers
 
+    this->ui->dwEntryDetails->setVisible(false);
+
     QStringList parsersNames;
     std::transform(this->parsers.begin(), this->parsers.end(), std::back_inserter(parsersNames),
                    [](Parser* parser) { return parser->getName(); });
@@ -65,6 +67,13 @@ MainWindow::MainWindow(QWidget *parent)
         }
         output << "</body></html>";
         this->ui->tbEntry->setHtml(output.join(""));
+    });
+
+    // Checks the action connected to the visibility of the entry details dock
+    QObject::connect(this->ui->tvOutput, &QTableView::doubleClicked, [this]() {
+        if (!this->ui->actionEntry_Details->isChecked()) {
+            this->ui->actionEntry_Details->setChecked(true);
+        }
     });
 
     // Setup status bar widgets
