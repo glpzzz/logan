@@ -5,6 +5,7 @@
 #include <QStandardItemModel>
 #include <QStringListModel>
 #include <QRegularExpression>
+#include <QLabel>
 
 #include "parser.h"
 
@@ -27,6 +28,10 @@ public slots:
     void on_actionAbout_Logan_triggered();
     void on_actionAbout_Qt_triggered();
 
+signals:
+    void fileChanged(const QString &filePath);
+    void entriesLoaded(const int &entriesNumber);
+
 private:
     Ui::MainWindow *ui;
     QString selectedFile;
@@ -38,5 +43,9 @@ private:
     QStringListModel modelParsers;
     QStandardItemModel modelEntries;
     QStringListModel modelHeaderLabels;
+
+    //Status bar widgets
+    QLabel *laFilePath;
+    QLabel *laEntriesNumber;
 };
 #endif // MAINWINDOW_H

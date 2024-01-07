@@ -15,6 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Setup status bar widgets
+    this->laFilePath = new QLabel(this);
+    this->ui->statusbar->addPermanentWidget(this->laFilePath, 1);
+    this->laEntriesNumber = new QLabel(this);
+    this->ui->statusbar->addPermanentWidget(this->laEntriesNumber);
+
     // START initialize with default parsers
 
     Parser* pNoParser = new Parser("Don't parse", "^(.*)$", QStringList("Message"));
@@ -37,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->modelParsers.setStringList(parsersNames);
     this->ui->cbAvailableParsers->setModel(&(this->modelParsers));
+    this->ui->tvOutput->setModel(&(this->modelEntries));
 
     // Connect the dataChanged signal to a slot
     QObject::connect(&(this->modelHeaderLabels), &QAbstractItemModel::dataChanged, [&]() {
@@ -65,7 +72,14 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    this->ui->tvOutput->setModel(&(this->modelEntries));
+    connect(this, &MainWindow::fileChanged, [this](const QString &filePath) {
+        this->laFilePath->setText(filePath);
+    });
+
+    connect(this, &MainWindow::entriesLoaded, [this](const int &entriesAmount) {
+        this->laEntriesNumber->setText(QString::number(entriesAmount) + " entries loaded.");
+    });
+
 
     this->selectFile();
 }
@@ -78,6 +92,7 @@ MainWindow::~MainWindow()
 void MainWindow::selectFile()
 {
     this->selectedFile = QFileDialog::getOpenFileName(this, "Select File");
+    emit this->fileChanged(this->selectedFile);
 }
 
 void MainWindow::processFile()
@@ -132,6 +147,7 @@ void MainWindow::processFile()
     file.close();
 
     this->ui->tvOutput->resizeColumnsToContents();
+    emit this->entriesLoaded(this->modelEntries.rowCount());
 }
 
 void MainWindow::selectParserByIndex(int index)
