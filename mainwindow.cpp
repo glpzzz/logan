@@ -91,12 +91,8 @@ void MainWindow::processFile()
         QMessageBox::critical(
             this,
             "Invalid regular expression",
-            QString("The regular expression \n {regexp} \n is not valid")
-                .replace(
-                    "{regexp}",
-                    this->currentParser->getPattern()
-                    )
-            );
+            QString("<p>The regular expression <br/> <tt>{regexp}</tt> <br/> is not valid</p>")
+                .replace("{regexp}", this->currentParser->getPattern()));
     }
 
     this->modelHeaderLabels.setStringList(this->currentParser->getHeaderLabels());
