@@ -43,6 +43,27 @@ MainWindow::MainWindow(QWidget *parent)
         this->modelEntries.setHorizontalHeaderLabels(this->modelHeaderLabels.stringList());
     });
 
+    QObject::connect(this->ui->tvOutput, &QTableView::doubleClicked, [&](const QModelIndex &index) {
+        if (index.isValid()) {
+
+            int rowIndex = index.row();
+
+            QStringList output;
+
+            // Get data for each column in the clicked row and populate the QMap
+            for (int col = 0; col < this->modelEntries.columnCount(); ++col) {
+                QModelIndex dataIndex = this->modelEntries.index(rowIndex, col);
+                QString columnName = this->modelHeaderLabels.stringList().at(col);
+                QVariant cellValue = this->modelEntries.data(dataIndex);
+
+                output << "<h2>" << columnName << "</h2>";
+                output << "<pre>" << cellValue.toString() << "</pre>";
+            }
+
+            this->ui->tbEntry->setHtml(output.join(""));
+        }
+    });
+
     this->ui->tvOutput->setModel(&(this->modelEntries));
 
     this->selectFile();
