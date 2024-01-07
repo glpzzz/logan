@@ -120,7 +120,8 @@ void MainWindow::processFile()
             QList<QStandardItem *> rowItems;
             for (int i = 1; i <= match.lastCapturedIndex(); ++i) {
                 QStandardItem *item = new QStandardItem(match.captured(i));
-                if (i == match.lastCapturedIndex()){
+                item->setEditable(false);
+                if (i == match.lastCapturedIndex()) {
                     item->setText(item->text() + "\n" + extraLines.join("\n"));
                     extraLines.clear();
                 }
