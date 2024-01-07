@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
 
             QStringList output;
 
-            // Get data for each column in the clicked row and populate the QMap
+            output << "<html><body>";
             for (int col = 0; col < this->modelEntries.columnCount(); ++col) {
                 QModelIndex dataIndex = this->modelEntries.index(rowIndex, col);
                 QString columnName = this->modelHeaderLabels.stringList().at(col);
@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
                 output << "<h2>" << columnName << "</h2>";
                 output << "<pre>" << cellValue.toString() << "</pre>";
             }
+            output << "</body></html>";
 
             this->ui->tbEntry->setHtml(output.join(""));
         }
