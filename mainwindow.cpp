@@ -15,11 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Setup status bar widgets
-    this->laFilePath = new QLabel(this);
-    this->ui->statusbar->addPermanentWidget(this->laFilePath, 1);
-    this->laEntriesNumber = new QLabel(this);
-    this->ui->statusbar->addPermanentWidget(this->laEntriesNumber);
 
     // START initialize with default parsers
 
@@ -50,27 +45,33 @@ MainWindow::MainWindow(QWidget *parent)
         this->modelEntries.setHorizontalHeaderLabels(this->modelHeaderLabels.stringList());
     });
 
-    QObject::connect(this->ui->tvOutput, &QTableView::doubleClicked, [&](const QModelIndex &index) {
-        if (index.isValid()) {
+    QItemSelectionModel *selectionModel = this->ui->tvOutput->selectionModel();
 
-            int rowIndex = index.row();
+    // Connect selectionChanged signal to a slot (or lambda function)
+    QObject::connect(selectionModel,
+                     &QItemSelectionModel::selectionChanged,
+                     [&](const QItemSelection &selected, const QItemSelection &deselected) {
 
-            QStringList output;
+        QStringList headers = this->modelHeaderLabels.stringList();
 
-            output << "<html><body>";
-            for (int col = 0; col < this->modelEntries.columnCount(); ++col) {
-                QModelIndex dataIndex = this->modelEntries.index(rowIndex, col);
-                QString columnName = this->modelHeaderLabels.stringList().at(col);
-                QVariant cellValue = this->modelEntries.data(dataIndex);
+        QStringList output;
+        output << "<html><body>";
+        for (const auto &index : selected.indexes()) {
+            QString columnName = headers.at(index.column());
+            QVariant cellValue = this->modelEntries.data(index);
 
-                output << "<h2>" << columnName << "</h2>";
-                output << "<pre>" << cellValue.toString() << "</pre>";
-            }
-            output << "</body></html>";
-
-            this->ui->tbEntry->setHtml(output.join(""));
+            output << "<h2>" << columnName << "</h2>";
+            output << "<pre>" << cellValue.toString() << "</pre>";
         }
+        output << "</body></html>";
+        this->ui->tbEntry->setHtml(output.join(""));
     });
+
+    // Setup status bar widgets
+    this->laFilePath = new QLabel(this);
+    this->ui->statusbar->addPermanentWidget(this->laFilePath, 1);
+    this->laEntriesNumber = new QLabel(this);
+    this->ui->statusbar->addPermanentWidget(this->laEntriesNumber);
 
     connect(this, &MainWindow::fileChanged, [this](const QString &filePath) {
         this->laFilePath->setText(filePath);
@@ -79,7 +80,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::entriesLoaded, [this](const int &entriesAmount) {
         this->laEntriesNumber->setText(QString::number(entriesAmount) + " entries loaded.");
     });
-
 
     this->selectFile();
 }
